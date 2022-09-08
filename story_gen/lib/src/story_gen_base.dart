@@ -90,12 +90,12 @@ class HorrorStoryGenerator {
 
   HorrorStoryGenerator();
 
-  void addMapEventListener(StoryBeatListener listener) {
-    _storyListeners.add(listener);
+  void addMapEventListener(MapUpdateEventListener listener) {
+    _mapListeners.add(listener);
   }
 
-  void removeMapEventListener(StoryBeatListener listener) {
-    _storyListeners.remove(listener);
+  void removeMapEventListener(MapUpdateEventListener listener) {
+    _mapListeners.remove(listener);
   }
 
   void addStoryEventListener(StoryBeatListener listener) {
@@ -120,16 +120,19 @@ class HorrorStoryGenerator {
   void generate({
     required Duration speed,
   }) {
-    assert(
-      !(timer?.isActive ?? true),
-      'Cannot generate whilst a simulation has started',
-    );
     assert(scene != null, 'A scene needs to be set before generate is ran');
     _monsters = scene!.monsters.map((e) => MonsterCharacter(e)).toList();
     _actors = scene!.characters
         .map((e) => Character(name: e.name, archetype: e.archetype))
         .toList();
     _placeActors(scene!);
+    _sendMapUpdate(
+      MapUpdateEvent(
+        monsters: List.from(_monsters),
+        characters: List.from(_actors),
+        scene: scene!,
+      ),
+    );
     timer = Timer.periodic(speed, _tick);
   }
 
@@ -248,7 +251,7 @@ class HorrorStoryGenerator {
             archetype: Archetype.funny,
           ),
           visibleMonsters: [],
-          type: StoryBeatEventType.say,
+          type: StoryBeatEventType.end,
           message:
               'That was all folks, seems like nobody survived in the end..',
         ),
@@ -567,6 +570,7 @@ enum StoryBeatEventType {
   flee,
   splitUp,
   jumpScare,
+  end,
 }
 
 class Scene {
@@ -624,6 +628,8 @@ abstract class BaseCharacter {
   Point<int> _position = Point(0, 0);
   bool _isDead = false;
   bool _fainted = false;
+
+  Point<int> get position => _position;
 
   int getSquaredDistance(BaseCharacter other) {
     return _position.squaredDistanceTo(other._position).toInt();
@@ -716,7 +722,14 @@ enum Archetype {
     faintThreshold: 2,
     scaredThreshold: 0,
     speed: 3,
-  ); // will run at the sight of any monster, but also prefers other char
+  ), // will run at the sight of any monster, but also prefers other char
+
+  neutral(
+    adrenalineBoost: 0.0,
+    faintThreshold: 7,
+    scaredThreshold: 5,
+    speed: 1,
+  );
 
   const Archetype({
     required this.adrenalineBoost,
