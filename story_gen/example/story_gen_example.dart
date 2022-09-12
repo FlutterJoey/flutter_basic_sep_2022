@@ -11,14 +11,17 @@ void main() {
         Character(name: 'Joons', archetype: Archetype.angry),
         Character(name: 'Brighton', archetype: Archetype.loving),
         Character(name: 'Joey', archetype: Archetype.scared),
-        Character(name: 'John', archetype: Archetype.funny),
-        Character(name: 'Tim', archetype: Archetype.angry),
-        Character(name: 'Stein', archetype: Archetype.funny),
-        Character(name: 'Ka Chung', archetype: Archetype.neutral),
+        Character(name: 'Tim1', archetype: Archetype.funny),
+        Character(name: 'Tim2', archetype: Archetype.angry),
+        Character(name: 'Joël', archetype: Archetype.funny),
       ],
     ),
   );
 
-  generator.addStoryEventListener((event) => print(event.message));
-  generator.generate(speed: Duration(seconds: 5));
+  generator.addStoryEventListener((event) {
+    if (event.type == StoryBeatEventType.kill) {
+      print(event.mainActor.name);
+    }
+  });
+  generator.generate(speed: Duration(seconds: 1));
 }
