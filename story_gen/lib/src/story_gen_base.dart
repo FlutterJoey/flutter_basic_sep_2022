@@ -442,6 +442,7 @@ class HorrorStoryGenerator {
       } else {
         var visibleMonsters = _getVisibleMonsters(actor);
         if (visibleMonsters.isEmpty) {
+          var randActor = _actors[random.nextInt(_actors.length)];
           // A generic roaming message
           event(
             mainActor: actor,
@@ -450,6 +451,10 @@ class HorrorStoryGenerator {
               '${actor.name}: I don\'t have a good feeling about this...',
               '${actor.name}: The vibe is creepy, but I kinda dig it',
               '${actor.name}: F*CK I left the oven on at home!',
+              '${actor.name} tripped and fell because they saw a spider',
+              '${actor.name}: I wonder where ${randActor.name} is hanging out...',
+              '${actor.name}: I hate ${randActor.name}, I hope he trips',
+              '${actor.name}: Wonder where the exit to this forest is',
             ][random.nextInt(3)],
           );
         } else {

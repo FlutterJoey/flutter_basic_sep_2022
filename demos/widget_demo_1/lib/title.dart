@@ -18,7 +18,6 @@ class AppTitleState extends State<AppTitle> {
   @override
   void initState() {
     super.initState();
-    print(isTapped);
   }
 
   @override

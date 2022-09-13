@@ -38,6 +38,9 @@ Response _getCharacterNames(Request request) {
         {'name': 'Niels', 'type': 'neutral'},
         {'name': 'Thomas', 'type': 'angry'},
         {'name': 'Tim', 'type': 'angry'},
+        {'name': 'Brighton', 'type': 'loving'},
+        {'name': 'Joons', 'type': 'scared'},
+        {'name': 'Tim the 2nd', 'type': 'scared'},
       ],
     }));
   } else {
