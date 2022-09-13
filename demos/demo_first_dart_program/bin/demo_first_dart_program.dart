@@ -26,10 +26,24 @@ class Point {
   final int y;
 
   const Point(this.x, this.y);
+
+  static String test() {
+    return 'test';
+  }
+}
+
+class ThreeDimensionalPoint extends Point {
+  final int z;
+
+  ThreeDimensionalPoint(super.x, super.y, this.z);
 }
 
 void main(List<String> args) {
   Point? p = const Point(1, 2);
+
+  int i = 1;
+
+  i.ceilToDouble();
 
   print(p.y);
 }
