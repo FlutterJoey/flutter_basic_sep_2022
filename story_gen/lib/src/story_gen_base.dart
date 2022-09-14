@@ -667,7 +667,7 @@ class Character extends BaseCharacter {
   factory Character.fromJson(Map<String, dynamic> json) {
     return Character(
       name: json['name'],
-      archetype: _archetypeFromString(json['archetype']),
+      archetype: _archetypeFromString(json['type']),
     );
   }
 
