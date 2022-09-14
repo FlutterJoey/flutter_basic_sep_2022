@@ -664,6 +664,17 @@ class Character extends BaseCharacter {
     required this.archetype,
   });
 
+  factory Character.fromJson(Map<String, dynamic> json) {
+    return Character(
+      name: json['name'],
+      archetype: _archetypeFromString(json['archetype']),
+    );
+  }
+
+  static Archetype _archetypeFromString(String value) {
+    return Archetype.values.firstWhere((element) => element.name == value);
+  }
+
   Point<int>? _reactToCharacterAndMove(Character character) {
     var difference = _position - character._position;
     if (character.archetype == Archetype.angry) {
