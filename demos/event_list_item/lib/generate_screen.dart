@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:event_list_item/detail_screen.dart';
 import 'package:event_list_item/main.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:story_gen/story_gen.dart';
 
 class GenerateScreen extends StatefulWidget {
@@ -54,6 +57,26 @@ class _GenerateScreenState extends State<GenerateScreen> {
     }
   }
 
+  Future<List<Character>> _getCharacters() async {
+    var response = await get(
+      Uri.parse('https://a806-185-10-158-5.ngrok.io/characters'),
+      headers: {
+        'X-API-KEY': preferences.getString('api-key')!,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      List<dynamic> rawCharacters = json['characters'];
+      return [
+        for (var jsonCharacter in rawCharacters) ...[
+          Character.fromJson(jsonCharacter),
+        ]
+      ];
+    }
+    return [];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,8 +92,23 @@ class _GenerateScreenState extends State<GenerateScreen> {
                 Expanded(
                   flex: 2,
                   child: Card(
-                    child: ListView(
-                      children: const [],
+                    child: FutureBuilder<List<Character>>(
+                      future: _getCharacters(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return ListView(
+                            children: [
+                              for (var character in snapshot.data!) ...[
+                                ListTile(
+                                  title: Text(character.name),
+                                ),
+                              ]
+                            ],
+                          );
+                        } else {
+                          return const CircularProgressIndicator();
+                        }
+                      },
                     ),
                   ),
                 ),

@@ -1,4 +1,10 @@
+import 'dart:convert';
+
+import 'package:event_list_item/generate_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+
+import 'main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login with Form'),
+        title: Text(preferences.getString('key') ?? 'test'),
       ),
       body: Center(
         child: Card(
@@ -87,6 +93,16 @@ class _LoginScreenState extends State<LoginScreen> {
       form.save();
       try {
         await _login(_data.email, _data.password);
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return const GenerateScreen();
+              },
+            ),
+          );
+        }
       } catch (e) {
         error = e.toString();
       }
@@ -94,12 +110,27 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login(String email, String password) async {
-    print('Logged in using: $email:$password');
-    if (email == '' && password == '') {
-      print('Success!!');
+    var response = await _loginToApi(email, password);
+    if (response.statusCode == 200) {
+      await preferences.setString(
+        'api-key',
+        jsonDecode(response.body)['token'],
+      );
     } else {
       throw 'Verkeerd email / password combinatie';
     }
+  }
+
+  Future<Response> _loginToApi(String email, String password) {
+    return post(
+      Uri.parse(
+        'https://a806-185-10-158-5.ngrok.io/login',
+      ),
+      body: jsonEncode({
+        'username': email,
+        'password': password,
+      }),
+    );
   }
 }
 
